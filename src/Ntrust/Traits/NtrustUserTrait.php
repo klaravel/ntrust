@@ -67,7 +67,7 @@ trait NtrustUserTrait
         parent::boot();
 
         static::deleting(function($user) {
-            if (!method_exists(Config::get('ntrust.profiles.' . $this->profile . '.model'), 'bootSoftDeletes')) {
+            if (!method_exists(Config::get('ntrust.profiles.' . $user->roleProfile . '.model'), 'bootSoftDeletes')) {
                 $user->roles()->sync([]);
             }
 
