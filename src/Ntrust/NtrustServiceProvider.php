@@ -72,21 +72,21 @@ class NtrustServiceProvider extends ServiceProvider
     {
         // Call to Ntrust::hasRole
         \Blade::directive('role', function($expression) {
-            return "<?php if (\\Ntrust::hasRole{$expression}) : ?>";
+            return "<?php if (\\Ntrust::hasRole({$expression})) : ?>";
         });
         \Blade::directive('endrole', function($expression) {
             return "<?php endif; // Ntrust::hasRole ?>";
         });
         // Call to Ntrust::can
         \Blade::directive('permission', function($expression) {
-            return "<?php if (\\Ntrust::can{$expression}) : ?>";
+            return "<?php if (\\Ntrust::can({$expression})) : ?>";
         });
         \Blade::directive('endpermission', function($expression) {
             return "<?php endif; // Ntrust::can ?>";
         });
         // Call to Ntrust::ability
         \Blade::directive('ability', function($expression) {
-            return "<?php if (\\Ntrust::ability{$expression}) : ?>";
+            return "<?php if (\\Ntrust::ability({$expression})) : ?>";
         });
         \Blade::directive('endability', function($expression) {
             return "<?php endif; // Ntrust::ability ?>";
