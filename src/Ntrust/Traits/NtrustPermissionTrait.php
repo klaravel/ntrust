@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Config;
 
-trait NntrustPermissionTrait
+trait NtrustPermissionTrait
 {
     /**
      * Many-to-Many relations with role model.
