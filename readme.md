@@ -185,7 +185,7 @@ The default migration takes advantage of `onDelete('cascade')` clauses within th
 ### Notes:
 Please add follwing line in your three model files (Users, Role, Permission)
 ```
-protected static $staticRoleProfile = 'admin';
+protected static $staticRoleProfile = 'user or [Your Profile]';
 ```
 
 ```php
