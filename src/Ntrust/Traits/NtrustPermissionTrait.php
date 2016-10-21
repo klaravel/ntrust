@@ -27,7 +27,7 @@ trait NtrustPermissionTrait
         parent::boot();
 
         static::deleting(function($permission) {
-            if (!method_exists(Config::get('ntrust.profiles.' . $this->roleProfile . '.permission'), 'bootSoftDeletes')) {
+            if (!method_exists(Config::get('ntrust.profiles.' . self::staticRoleProfile . '.permission'), 'bootSoftDeletes')) {
                 $permission->roles()->sync([]);
             }
 
