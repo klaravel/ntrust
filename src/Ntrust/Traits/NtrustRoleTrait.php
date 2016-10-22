@@ -12,7 +12,7 @@ trait NtrustRoleTrait
         $rolePrimaryKey = $this->primaryKey;
         $cacheKey = 'ntrust_permissions_for_role_'.$this->$rolePrimaryKey;
         if(Cache::getStore() instanceof TaggableStore) {
-            return Cache::tags(Config::get('ntrust.profiles.' . $this->roleProfile . '.permission_role_table'))->remember($cacheKey, Config::get('cache.ttl'), function () {
+            return Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))->remember($cacheKey, Config::get('cache.ttl'), function () {
                 return $this->perms()->get();
             });
         }
@@ -24,7 +24,7 @@ trait NtrustRoleTrait
             return false;
         }
         if(Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('ntrust.profiles.' . $this->roleProfile . '.permission_role_table'))->flush();
+            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))->flush();
         }
         return true;
     }
@@ -34,7 +34,7 @@ trait NtrustRoleTrait
             return false;
         }
         if(Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('ntrust.profiles.' . $this->roleProfile . '.permission_role_table'))->flush();
+            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))->flush();
         }
         return true;
     }
@@ -44,7 +44,7 @@ trait NtrustRoleTrait
             return false;
         }
         if(Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('ntrust.profiles.' . $this->roleProfile . '.permission_role_table'))->flush();
+            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))->flush();
         }
         return true;
     }
@@ -57,10 +57,10 @@ trait NtrustRoleTrait
     public function users()
     {
         return $this->belongsToMany(
-            Config::get('ntrust.profiles.' . $this->roleProfile . '.model'),
-            Config::get('ntrust.profiles.' . $this->roleProfile . '.role_user_table'),
-            Config::get('ntrust.profiles.' . $this->roleProfile . '.role_foreign_key'),
-            Config::get('ntrust.profiles.' . $this->roleProfile . '.user_foreign_key'));
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.model'),
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'),
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.role_foreign_key'),
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.user_foreign_key'));
        // return $this->belongsToMany(Config::get('auth.model'), Config::get('ntrust.role_user_table'));
     }
 
@@ -73,10 +73,10 @@ trait NtrustRoleTrait
     public function perms()
     {
         return $this->belongsToMany(
-            Config::get('ntrust.profiles.' . $this->roleProfile . '.permission'), 
-            Config::get('ntrust.profiles.' . $this->roleProfile . '.permission_role_table'), 
-            Config::get('ntrust.profiles.' . $this->roleProfile . '.role_foreign_key'), 
-            Config::get('ntrust.profiles.' . $this->roleProfile . '.permission_foreign_key'));
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.permission'),
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'),
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.role_foreign_key'),
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_foreign_key'));
     }
 
     /**
@@ -91,7 +91,7 @@ trait NtrustRoleTrait
         parent::boot();
 
         static::deleting(function($role) {
-            if (!method_exists(Config::get('ntrust.profiles.' . self::$staticRoleProfile . '.role'), 'bootSoftDeletes')) {
+            if (!method_exists(Config::get('ntrust.profiles.' . self::$roleProfile . '.role'), 'bootSoftDeletes')) {
                 $role->users()->sync([]);
                 $role->perms()->sync([]);
             }

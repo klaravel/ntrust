@@ -11,9 +11,9 @@ trait NtrustUserTrait
     public function cachedRoles()
     {
         $userPrimaryKey = $this->primaryKey;
-        $cacheKey = 'ntrust_roles_for_' . $this->roleProfile . '_'.$this->$userPrimaryKey;
+        $cacheKey = 'ntrust_roles_for_' . self::$roleProfile . '_'.$this->$userPrimaryKey;
         if(Cache::getStore() instanceof TaggableStore) {
-            return Cache::tags(Config::get('ntrust.profiles.' . $this->roleProfile . '.role_user_table'))->remember($cacheKey, Config::get('cache.ttl'), function () {
+            return Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->remember($cacheKey, Config::get('cache.ttl'), function () {
                 return $this->roles()->get();
             });
         }
@@ -23,21 +23,21 @@ trait NtrustUserTrait
     {   //both inserts and updates
         parent::save($options);
         if(Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('ntrust.profiles.' . $this->roleProfile . '.role_user_table'))->flush();
+            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->flush();
         }
     }
     public function delete(array $options = [])
     {   //soft or hard
         parent::delete($options);
         if(Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('ntrust.profiles.' . $this->roleProfile . '.role_user_table'))->flush();
+            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->flush();
         }
     }
     public function restore()
     {   //soft delete undo's
         parent::restore();
         if(Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('ntrust.profiles.' . $this->roleProfile . '.role_user_table'))->flush();
+            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->flush();
         }
     }
 
@@ -49,10 +49,10 @@ trait NtrustUserTrait
     public function roles()
     {
         return $this->belongsToMany(
-            Config::get('ntrust.profiles.' . $this->roleProfile . '.role'), 
-            Config::get('ntrust.profiles.' . $this->roleProfile . '.role_user_table'), 
-            Config::get('ntrust.profiles.' . $this->roleProfile . '.user_foreign_key'), 
-            Config::get('ntrust.profiles.' . $this->roleProfile . '.role_foreign_key'));
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.role'), 
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'), 
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.user_foreign_key'), 
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.role_foreign_key'));
     }
 
     /**
@@ -67,7 +67,7 @@ trait NtrustUserTrait
         parent::boot();
 
         static::deleting(function($user) {
-            if (!method_exists(Config::get('ntrust.profiles.' . self::$staticRoleProfile . '.model'), 'bootSoftDeletes')) {
+            if (!method_exists(Config::get('ntrust.profiles.' . self::$roleProfile . '.model'), 'bootSoftDeletes')) {
                 $user->roles()->sync([]);
             }
 

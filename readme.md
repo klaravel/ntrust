@@ -106,7 +106,7 @@ class Role extends Model
     /*
      * Role profile to get value from ntrust config file.
      */
-    protected $roleProfile = 'user';
+    protected static $roleProfile = 'user';
 }
 ```
 
@@ -134,7 +134,7 @@ class Permission extends Model
     /*
      * Role profile to get value from ntrust config file.
      */
-    protected $roleProfile = 'user';
+    protected static $roleProfile = 'user';
 }
 
 ```
@@ -162,7 +162,7 @@ class User extends Authenticatable
     /*
      * Role profile to get value from ntrust config file.
      */
-    protected $roleProfile = 'user';
+    protected static $roleProfile = 'user';
 
     ...
 }
@@ -182,11 +182,6 @@ composer dump-autoload
 
 The default migration takes advantage of `onDelete('cascade')` clauses within the pivot tables to remove relations when a parent record is deleted. If for some reason you cannot use cascading deletes in your database, the NtrustRole and NtrustPermission classes, and the HasRole trait include event listeners to manually delete records in relevant pivot tables. In the interest of not accidentally deleting data, the event listeners will **not** delete pivot data if the model uses soft deleting. However, due to limitations in Laravel's event listeners, there is no way to distinguish between a call to `delete()` versus a call to `forceDelete()`. For this reason, **before you force delete a model, you must manually delete any of the relationship data** (unless your pivot tables uses cascading deletes). For example:
 
-### Notes:
-Please add follwing line in your three model files (Users, Role, Permission)
-```
-protected static $staticRoleProfile = 'user or [Your Profile]';
-```
 
 ```php
 $role = Role::findOrFail(1); // Pull back a given role
