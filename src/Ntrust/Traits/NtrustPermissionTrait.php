@@ -11,8 +11,8 @@ trait NtrustPermissionTrait
      */
     public function roles()
     {
-        return $this->belongsToMany(Config::get('ntrust.profiles.' . $this->roleProfile . '.role'), 
-            Config::get('ntrust.profiles.' . $this->roleProfile . '.permission_role_table'));
+        return $this->belongsToMany(Config::get('ntrust.profiles.' . self::$roleProfile . '.role'), 
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'));
     }
 
     /**
@@ -27,7 +27,7 @@ trait NtrustPermissionTrait
         parent::boot();
 
         static::deleting(function($permission) {
-            if (!method_exists(Config::get('ntrust.profiles.' . self::$staticRoleProfile . '.permission'), 'bootSoftDeletes')) {
+            if (!method_exists(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission'), 'bootSoftDeletes')) {
                 $permission->roles()->sync([]);
             }
 
