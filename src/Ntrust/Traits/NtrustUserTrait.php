@@ -19,27 +19,6 @@ trait NtrustUserTrait
         }
         else return $this->roles()->get();
     }
-    public function save(array $options = [])
-    {   //both inserts and updates
-        parent::save($options);
-        if(Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->flush();
-        }
-    }
-    public function delete(array $options = [])
-    {   //soft or hard
-        parent::delete($options);
-        if(Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->flush();
-        }
-    }
-    public function restore()
-    {   //soft delete undo's
-        parent::restore();
-        if(Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->flush();
-        }
-    }
 
     /**
      * Many-to-Many relations with Role.
@@ -56,23 +35,47 @@ trait NtrustUserTrait
     }
 
     /**
-     * Boot the user model
-     * Attach event listener to remove the many-to-many records when trying to delete
-     * Will NOT delete any records if the user model uses soft deletes.
+     * The "booting" method of the model.
      *
-     * @return void|bool
+     * @return void
      */
-    public static function boot()
+    protected static function boot()
     {
         parent::boot();
+        static::bootObservers();
+    }
 
+    /**
+     * Boot observers
+     *
+     * @return void
+     */
+    protected static function bootObservers()
+    {
         static::deleting(function($user) {
-            if (!method_exists(Config::get('ntrust.profiles.' . self::$roleProfile . '.model'), 'bootSoftDeletes')) {
-                $user->roles()->sync([]);
+            if(Cache::getStore() instanceof TaggableStore) {
+                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->flush();
             }
-
-            return true;
+            //check for soft deleting
+            if (!method_exists(self::class, 'isForceDeleting') || !$user->isForceDeleting()) {
+                $user->roles()->sync([]);
+            }            
         });
+
+        static::saving(function($user) {
+            if(Cache::getStore() instanceof TaggableStore) {
+                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->flush();
+            }
+        });
+
+        //if softdelete trait is used
+        if(method_exists(self::class, 'restoring')) {
+            static::restoring(function($user) {
+                if(Cache::getStore() instanceof TaggableStore) {
+                    Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->flush();
+                }
+            });
+        }
     }
 
     /**
