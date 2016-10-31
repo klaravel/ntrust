@@ -18,36 +18,6 @@ trait NtrustRoleTrait
         }
         else return $this->perms()->get();
     }
-    public function save(array $options = [])
-    {   //both inserts and updates
-        if(!parent::save($options)){
-            return false;
-        }
-        if(Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))->flush();
-        }
-        return true;
-    }
-    public function delete(array $options = [])
-    {   //soft or hard
-        if(!parent::delete($options)){
-            return false;
-        }
-        if(Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))->flush();
-        }
-        return true;
-    }
-    public function restore()
-    {   //soft delete undo's
-        if(!parent::restore()){
-            return false;
-        }
-        if(Cache::getStore() instanceof TaggableStore) {
-            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))->flush();
-        }
-        return true;
-    }
 
     /**
      * Many-to-Many relations with the user model.
@@ -80,23 +50,51 @@ trait NtrustRoleTrait
     }
 
     /**
-     * Boot the role model
-     * Attach event listener to remove the many-to-many records when trying to delete
-     * Will NOT delete any records if the role model uses soft deletes.
+     * The "booting" method of the model.
      *
-     * @return void|bool
+     * @return void
      */
-    public static function boot()
+    protected static function boot()
     {
         parent::boot();
+        static::bootObservers();
+    }
 
-        static::deleting(function($role) {
-            if (!method_exists(Config::get('ntrust.profiles.' . self::$roleProfile . '.role'), 'bootSoftDeletes')) {
+    /**
+     * Boot observers
+     *
+     * @return void
+     */
+    protected static function bootObservers()
+    {
+        static::saved(function()
+        {
+            if(Cache::getStore() instanceof TaggableStore) {
+                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))
+                    ->flush();
+            }
+        });
+
+        static::deleted(function($role)
+        {
+            if(Cache::getStore() instanceof TaggableStore) {
+                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))
+                    ->flush();
+
                 $role->users()->sync([]);
                 $role->perms()->sync([]);
             }
+        });
 
-            return true;
+        static::restored(function($role)
+        {
+            if(Cache::getStore() instanceof TaggableStore) {
+                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))
+                    ->flush();
+
+                $role->users()->sync([]);
+                $role->perms()->sync([]);
+            }
         });
     }
     

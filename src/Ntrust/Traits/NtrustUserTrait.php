@@ -52,30 +52,33 @@ trait NtrustUserTrait
      */
     protected static function bootObservers()
     {
-        static::deleting(function($user) {
+        static::saved(function()
+        {
             if(Cache::getStore() instanceof TaggableStore) {
-                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->flush();
+                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))
+                    ->flush();
             }
-            //check for soft deleting
-            if (!method_exists(self::class, 'isForceDeleting') || !$user->isForceDeleting()) {
+        });
+
+        static::deleted(function($user)
+        {
+            if(Cache::getStore() instanceof TaggableStore) {
+                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))
+                    ->flush();
+
                 $user->roles()->sync([]);
-            }            
-        });
-
-        static::saving(function($user) {
-            if(Cache::getStore() instanceof TaggableStore) {
-                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->flush();
             }
         });
 
-        //if softdelete trait is used
-        if(method_exists(self::class, 'restoring')) {
-            static::restoring(function($user) {
-                if(Cache::getStore() instanceof TaggableStore) {
-                    Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->flush();
-                }
-            });
-        }
+        static::restored(function($user)
+        {
+            if(Cache::getStore() instanceof TaggableStore) {
+                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))
+                    ->flush();
+
+                $user->roles()->sync([]);
+            }
+        });
     }
 
     /**

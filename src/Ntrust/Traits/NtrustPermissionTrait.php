@@ -26,12 +26,14 @@ trait NtrustPermissionTrait
     {
         parent::boot();
 
-        static::deleting(function($permission) {
-            if (!method_exists(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission'), 'bootSoftDeletes')) {
-                $permission->roles()->sync([]);
-            }
+        static::deleted(function($permission)
+        {
+            if(Cache::getStore() instanceof TaggableStore) {
+                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission'))
+                    ->flush();
 
-            return true;
+                $role->perms()->sync([]);
+            }
         });
     }
 }
