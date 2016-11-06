@@ -32,7 +32,7 @@ trait NtrustPermissionTrait
                 Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission'))
                     ->flush();
 
-                $role->perms()->sync([]);
+                $permission->roles()->sync([]);
             }
         });
     }
