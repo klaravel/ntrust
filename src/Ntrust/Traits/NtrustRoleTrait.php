@@ -86,16 +86,18 @@ trait NtrustRoleTrait
             }
         });
 
-        static::restored(function($role)
-        {
-            if(Cache::getStore() instanceof TaggableStore) {
-                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))
-                    ->flush();
+        if(method_exists(self::class, 'restoring')) {
+            static::restored(function($role)
+            {
+                if(Cache::getStore() instanceof TaggableStore) {
+                    Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))
+                        ->flush();
 
-                $role->users()->sync([]);
-                $role->perms()->sync([]);
-            }
-        });
+                    $role->users()->sync([]);
+                    $role->perms()->sync([]);
+                }
+            });
+        }
     }
     
     /**

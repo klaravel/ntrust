@@ -70,15 +70,17 @@ trait NtrustUserTrait
             }
         });
 
-        static::restored(function($user)
-        {
-            if(Cache::getStore() instanceof TaggableStore) {
-                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))
-                    ->flush();
+        if(method_exists(self::class, 'restoring')) {
+            static::restored(function($user)
+            {
+                if(Cache::getStore() instanceof TaggableStore) {
+                    Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))
+                        ->flush();
 
-                $user->roles()->sync([]);
-            }
-        });
+                    $user->roles()->sync([]);
+                }
+            });
+        }
     }
 
     /**
