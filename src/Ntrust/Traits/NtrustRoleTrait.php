@@ -86,7 +86,7 @@ trait NtrustRoleTrait
             }
         });
 
-        if(method_exists(self::class, 'restoring')) {
+        if(method_exists(self::class, 'restored')) {
             static::restored(function($role)
             {
                 if(Cache::getStore() instanceof TaggableStore) {

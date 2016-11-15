@@ -70,7 +70,7 @@ trait NtrustUserTrait
             }
         });
 
-        if(method_exists(self::class, 'restoring')) {
+        if(method_exists(self::class, 'restored')) {
             static::restored(function($user)
             {
                 if(Cache::getStore() instanceof TaggableStore) {
