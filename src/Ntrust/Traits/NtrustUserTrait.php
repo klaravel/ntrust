@@ -35,22 +35,11 @@ trait NtrustUserTrait
     }
 
     /**
-     * The "booting" method of the model.
-     *
+     * Trait boot method
+     * 
      * @return void
      */
-    protected static function boot()
-    {
-        parent::boot();
-        static::bootObservers();
-    }
-
-    /**
-     * Boot observers
-     *
-     * @return void
-     */
-    protected static function bootObservers()
+    protected static function bootNtrustUserTrait()
     {
         static::saved(function()
         {

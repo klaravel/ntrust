@@ -31,7 +31,6 @@ trait NtrustRoleTrait
             Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'),
             Config::get('ntrust.profiles.' . self::$roleProfile . '.role_foreign_key'),
             Config::get('ntrust.profiles.' . self::$roleProfile . '.user_foreign_key'));
-       // return $this->belongsToMany(Config::get('auth.model'), Config::get('ntrust.role_user_table'));
     }
 
     /**
@@ -50,22 +49,11 @@ trait NtrustRoleTrait
     }
 
     /**
-     * The "booting" method of the model.
-     *
+     * Trait boot method
+     * 
      * @return void
      */
-    protected static function boot()
-    {
-        parent::boot();
-        static::bootObservers();
-    }
-
-    /**
-     * Boot observers
-     *
-     * @return void
-     */
-    protected static function bootObservers()
+    protected static function bootNtrustRoleTrait()
     {
         static::saved(function()
         {

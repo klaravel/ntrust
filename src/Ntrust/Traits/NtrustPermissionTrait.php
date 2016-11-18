@@ -16,16 +16,16 @@ trait NtrustPermissionTrait
     }
 
     /**
-     * Boot the permission model
-     * Attach event listener to remove the many-to-many records when trying to delete
-     * Will NOT delete any records if the permission model uses soft deletes.
-     *
-     * @return void|bool
+     * Trait boot method
+     * 
+     * @return void
      */
-    public static function boot()
+    protected static function bootNtrustPermissionTrait()
     {
-        parent::boot();
-
+        /**
+         * Attach event listener to remove the many-to-many records when trying to delete
+         *  Will NOT delete any records if the permission model uses soft deletes.
+         */
         static::deleted(function($permission)
         {
             if(Cache::getStore() instanceof TaggableStore) {
