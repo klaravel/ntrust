@@ -147,7 +147,7 @@ trait NtrustRoleTrait
      *
      * @return void
      */
-    public function attachPermission($permission)
+    public function attachPermission($permission, $duplicate = TRUE)
     {
         if (is_object($permission)) {
             $permission = $permission->getKey();
@@ -157,7 +157,13 @@ trait NtrustRoleTrait
             $permission = $permission['id'];
         }
 
-        $this->perms()->attach($permission);
+        if ($duplicate === TRUE) {
+            $this->perms()->attach($permission);
+        } else {
+            if ($this->perms->contains($permission)) {
+                $this->perms()->attach($permission);
+            }
+        }
     }
 
     /**
@@ -185,10 +191,10 @@ trait NtrustRoleTrait
      *
      * @return void
      */
-    public function attachPermissions($permissions)
+    public function attachPermissions($permissions, $duplicate = TRUE)
     {
         foreach ($permissions as $permission) {
-            $this->attachPermission($permission);
+            $this->attachPermission($permission, $duplicate);
         }
     }
 
