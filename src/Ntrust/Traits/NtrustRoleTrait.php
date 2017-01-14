@@ -160,7 +160,7 @@ trait NtrustRoleTrait
         if ($duplicate === TRUE) {
             $this->perms()->attach($permission);
         } else {
-            if ($this->perms->contains($permission)) {
+            if (!$this->perms->contains($permission)) {
                 $this->perms()->attach($permission);
             }
         }
