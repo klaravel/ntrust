@@ -1,6 +1,6 @@
-## NTRUST Multi-User Roles & Permissions (Laravel 5.3)
+## NTRUST Multi-User Roles & Permissions (Laravel 5.4)
 
-Ntrust is a succinct and flexible way to add Role-based Permissions to **Laravel 5.3**.
+Ntrust is a succinct and flexible way to add Role-based Permissions to **Laravel 5.4**.
 
 **Original Package:** https://github.com/Zizaco/entrust
 
