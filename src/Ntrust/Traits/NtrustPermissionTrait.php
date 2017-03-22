@@ -1,6 +1,8 @@
 <?php namespace Klaravel\Ntrust\Traits;
 
+use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Cache;
 
 trait NtrustPermissionTrait
 {
