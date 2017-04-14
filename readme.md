@@ -31,7 +31,7 @@ Ntrust is a succinct and flexible way to add Role-based Permissions to **Laravel
 
 In order to install Laravel 5 Ntrust, just add
 
-    "klaravel/ntrust": "1.0.*"
+    "klaravel/ntrust": "1.1.*"
 
 to your composer.json. Then run `composer install` or `composer update`.
 
