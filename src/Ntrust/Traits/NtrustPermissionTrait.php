@@ -15,8 +15,8 @@ trait NtrustPermissionTrait
     {
         return $this->belongsToMany(Config::get('ntrust.profiles.' . self::$roleProfile . '.role'), 
             Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'),
-            Config::get('ntrust.profiles.' . self::$roleProfile . '.role_foreign_key'),
-            Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_foreign_key')
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_foreign_key'),
+            Config::get('ntrust.profiles.' . self::$roleProfile . '.role_foreign_key')
             );
     }
 
