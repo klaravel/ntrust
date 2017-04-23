@@ -12,7 +12,7 @@ trait NtrustRoleTrait
         $rolePrimaryKey = $this->primaryKey;
         $cacheKey = 'ntrust_permissions_for_role_'.$this->$rolePrimaryKey;
         if(Cache::getStore() instanceof TaggableStore) {
-            return Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))->remember($cacheKey, Config::get('cache.ttl'), function () {
+            return Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))->remember($cacheKey, Config::get('cache.ttl', 1440), function () {
                 return $this->perms()->get();
             });
         }

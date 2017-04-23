@@ -13,7 +13,7 @@ trait NtrustUserTrait
         $userPrimaryKey = $this->primaryKey;
         $cacheKey = 'ntrust_roles_for_' . self::$roleProfile . '_'.$this->$userPrimaryKey;
         if(Cache::getStore() instanceof TaggableStore) {
-            return Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->remember($cacheKey, Config::get('cache.ttl'), function () {
+            return Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->remember($cacheKey, Config::get('cache.ttl', 1440), function () {
                 return $this->roles()->get();
             });
         }
