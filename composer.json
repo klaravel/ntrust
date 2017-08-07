@@ -19,5 +19,15 @@
             "Klaravel\\Ntrust\\": "src/Ntrust"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Klaravel\\Ntrust\\NtrustServiceProvider"
+            ],
+            "aliases": {
+                "Ntrust": "Klaravel\\Ntrust\\NtrustFacade"
+            }
+        }
+    },
     "minimum-stability": "dev"
 }
