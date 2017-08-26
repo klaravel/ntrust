@@ -7,17 +7,24 @@ use InvalidArgumentException;
 
 trait NtrustUserTrait
 {
+    private static $roles;
+
     //Big block of caching functionality.
     public function cachedRoles()
     {
         $userPrimaryKey = $this->primaryKey;
         $cacheKey = 'ntrust_roles_for_' . self::$roleProfile . '_'.$this->$userPrimaryKey;
-        if(Cache::getStore() instanceof TaggableStore) {
-            return Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->remember($cacheKey, Config::get('cache.ttl', 1440), function () {
+        if (self::$roles) {
+            return self::$roles;
+        } else if (Cache::getStore() instanceof TaggableStore) {
+            self::$roles = Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->remember($cacheKey, Config::get('cache.ttl', 1440), function () {
                 return $this->roles()->get();
             });
+            return self::$roles;
+        } else {
+            self::$roles = $this->roles()->get();
+            return self::$roles;
         }
-        else return $this->roles()->get();
     }
 
     /**
@@ -47,6 +54,8 @@ trait NtrustUserTrait
                 Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))
                     ->flush();
             }
+
+            self::$roles = null;
         });
 
         static::deleted(function($user)
@@ -57,6 +66,8 @@ trait NtrustUserTrait
 
                 $user->roles()->sync([]);
             }
+
+            self::$roles = null;
         });
 
         if(method_exists(self::class, 'restored')) {
@@ -69,6 +80,8 @@ trait NtrustUserTrait
                     $user->roles()->sync([]);
                 }
             });
+
+            self::$roles = null;
         }
     }
 
@@ -280,3 +293,4 @@ trait NtrustUserTrait
     }
 
 }
+
