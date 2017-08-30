@@ -50,38 +50,19 @@ trait NtrustUserTrait
     {
         static::saved(function()
         {
-            if(Cache::getStore() instanceof TaggableStore) {
-                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))
-                    ->flush();
-            }
-
-            self::$roles = null;
+            self::clearCache();
         });
 
         static::deleted(function($user)
         {
-            if(Cache::getStore() instanceof TaggableStore) {
-                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))
-                    ->flush();
-
-                $user->roles()->sync([]);
-            }
-
-            self::$roles = null;
+            self::clearCache($user);
         });
 
         if(method_exists(self::class, 'restored')) {
             static::restored(function($user)
             {
-                if(Cache::getStore() instanceof TaggableStore) {
-                    Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))
-                        ->flush();
-
-                    $user->roles()->sync([]);
-                }
+                self::clearCache($user);
             });
-
-            self::$roles = null;
         }
     }
 
@@ -246,6 +227,8 @@ trait NtrustUserTrait
         }
 
         $this->roles()->attach($role);
+
+        self::clearCache();
     }
 
     /**
@@ -264,6 +247,8 @@ trait NtrustUserTrait
         }
 
         $this->roles()->detach($role);
+
+        self::clearCache();
     }
 
     /**
@@ -292,5 +277,20 @@ trait NtrustUserTrait
         }
     }
 
-}
+    /**
+     * Clear cache
+     */
+    public static function clearCache($user = null) 
+    {
+        if(Cache::getStore() instanceof TaggableStore) {
+            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))
+                ->flush();
 
+            if ($user)
+                $user->roles()->sync([]);
+        }
+
+        self::$roles = null;
+    }
+
+}

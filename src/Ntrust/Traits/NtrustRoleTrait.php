@@ -64,39 +64,18 @@ trait NtrustRoleTrait
     {
         static::saved(function()
         {
-            if(Cache::getStore() instanceof TaggableStore) {
-                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))
-                    ->flush();
-            }
-
-            self::$permissions = null;
+            self::clearCache();
         });
 
         static::deleted(function($role)
         {
-            if(Cache::getStore() instanceof TaggableStore) {
-                Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))
-                    ->flush();
-
-                $role->users()->sync([]);
-                $role->perms()->sync([]);
-            }
-
-            self::$permissions = null;
+            self::clearCache($role);
         });
 
         if(method_exists(self::class, 'restored')) {
             static::restored(function($role)
             {
-                if(Cache::getStore() instanceof TaggableStore) {
-                    Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))
-                        ->flush();
-
-                    $role->users()->sync([]);
-                    $role->perms()->sync([]);
-                }
-
-                self::$permissions = null;
+                self::clearCache($role);
             });
         }
     }
@@ -171,6 +150,8 @@ trait NtrustRoleTrait
         }
 
         $this->perms()->attach($permission);
+
+        self::clearCache();
     }
 
     /**
@@ -189,6 +170,8 @@ trait NtrustRoleTrait
             $permission = $permission['id'];
 
         $this->perms()->detach($permission);
+
+        self::clearCache();
     }
 
     /**
@@ -219,6 +202,24 @@ trait NtrustRoleTrait
         foreach ($permissions as $permission) {
             $this->detachPermission($permission);
         }
+    }
+
+    /**
+     * Clear cache
+     */
+    public static function clearCache($role = null) 
+    {
+        if(Cache::getStore() instanceof TaggableStore) {
+            Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))
+                ->flush();
+
+            if ($role) {
+                $role->users()->sync([]);
+                $role->perms()->sync([]);
+            }
+        }
+
+        self::$permissions = null;
     }
 }
 
