@@ -7,24 +7,20 @@ use InvalidArgumentException;
 
 trait NtrustUserTrait
 {
-    private static $roles;
-
     //Big block of caching functionality.
     public function cachedRoles()
     {
         $userPrimaryKey = $this->primaryKey;
         $cacheKey = 'ntrust_roles_for_' . self::$roleProfile . '_'.$this->$userPrimaryKey;
-        if (self::$roles) {
-            return self::$roles;
-        } else if (Cache::getStore() instanceof TaggableStore) {
-            self::$roles = Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))->remember($cacheKey, Config::get('cache.ttl', 1440), function () {
-                return $this->roles()->get();
-            });
-            return self::$roles;
-        } else {
-            self::$roles = $this->roles()->get();
-            return self::$roles;
-        }
+
+        if (Cache::getStore() instanceof TaggableStore) {
+            return Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.role_user_table'))
+                ->remember($cacheKey, Config::get('cache.ttl', 1440), function () {
+                    return $this->roles()->get();
+                });
+        } 
+        else
+            return $this->roles()->get();
     }
 
     /**
@@ -289,8 +285,6 @@ trait NtrustUserTrait
             if ($user)
                 $user->roles()->sync([]);
         }
-
-        self::$roles = null;
     }
 
 }

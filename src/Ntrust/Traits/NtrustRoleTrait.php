@@ -6,24 +6,20 @@ use Illuminate\Support\Facades\Cache;
 
 trait NtrustRoleTrait
 {
-    private static $permissions;
-
     //Big block of caching functionality.
     public function cachedPermissions()
     {
         $rolePrimaryKey = $this->primaryKey;
         $cacheKey = 'ntrust_permissions_for_role_'.$this->$rolePrimaryKey;
-        if (self::$permissions) {
-            return self::$permissions;
-        } else if (Cache::getStore() instanceof TaggableStore) {
-            self::$permissions = Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))->remember($cacheKey, Config::get('cache.ttl', 1440), function () {
-                return $this->perms()->get();
-            });
-            return self::$permissions;
-        } else {
-            self::$permissions = $this->perms()->get();
-            return self::$permissions;
-        }
+
+        if (Cache::getStore() instanceof TaggableStore) {
+            return Cache::tags(Config::get('ntrust.profiles.' . self::$roleProfile . '.permission_role_table'))
+                ->remember($cacheKey, Config::get('cache.ttl', 1440), function () {
+                    return $this->perms()->get();
+                });
+        } 
+        else
+            return $this->perms()->get();
     }
 
     /**
@@ -62,19 +58,16 @@ trait NtrustRoleTrait
      */
     protected static function bootNtrustRoleTrait()
     {
-        static::saved(function()
-        {
+        static::saved(function() {
             self::clearCache();
         });
 
-        static::deleted(function($role)
-        {
+        static::deleted(function($role) {
             self::clearCache($role);
         });
 
         if(method_exists(self::class, 'restored')) {
-            static::restored(function($role)
-            {
+            static::restored(function($role) {
                 self::clearCache($role);
             });
         }
@@ -218,8 +211,6 @@ trait NtrustRoleTrait
                 $role->perms()->sync([]);
             }
         }
-
-        self::$permissions = null;
     }
 }
 
