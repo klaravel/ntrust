@@ -2,7 +2,16 @@
     "name": "klaravel/ntrust",
     "description": "Role-Based Permissions for Laravel 5.3+",
     "license": "MIT",
-    "keywords": ["laravel", "trust", "ntrust", "user", "admin", "user role permissions", "role", "permissions"],
+    "keywords": [
+        "laravel",
+        "trust",
+        "ntrust",
+        "user",
+        "admin",
+        "user role permissions",
+        "role",
+        "permissions"
+    ],
     "authors": [
         {
             "name": "Keyur Ajmera",
@@ -10,9 +19,9 @@
         }
     ],
     "require": {
-        "illuminate/console": "5.*",
-        "illuminate/support": "5.*",
-        "illuminate/cache": "5.*"
+        "illuminate/console": "^9.0",
+        "illuminate/support": "^9.0",
+        "illuminate/cache": "^9.0"
     },
     "autoload": {
         "psr-4": {
